@@ -1,4 +1,4 @@
-const md5 = require('MD5')
+const md5 = require('md5')
 const { resError } = require('./errors')
 
 exports.login = (db, secret, jwt) => (req, res) => {
