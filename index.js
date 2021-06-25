@@ -7,6 +7,13 @@ const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt')
 const settings = require('./config')
 const auth = require('./auth')
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+
+const privateKey  = fs.readFileSync('sslcert/key.pem', 'utf8');
+const certificate = fs.readFileSync('sslcert/cert.pem', 'utf8');
+const credentials = {key: privateKey, cert: certificate};
 
 const {
     gLst,
@@ -23,6 +30,9 @@ app.use(cors())
 app.use(express.urlencoded({extended: true}));
 app.use(express.json())
 app.use('/api/', expressJwt({ secret: secret, algorithms: ['HS256'] }))
+
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 
 MongoClient.connect(config.APP.DB_URL, { useUnifiedTopology: true },
     (err, conn) => {
@@ -41,10 +51,13 @@ MongoClient.connect(config.APP.DB_URL, { useUnifiedTopology: true },
         app.put('/api/:entity/put', gPut(db))
         app.post('/api/:entity/post', gPost(db))
         
+        httpServer.listen(8080);
+        httpsServer.listen(8443);
 
         app.listen(config.APP.PORT, () => {
             console.log(`[*] Database URL ${config.APP.DB_URL}`)
             console.log(`[*] Server Listening on port ${config.APP.PORT}`)
         })
+
     }
 )
