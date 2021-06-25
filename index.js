@@ -17,7 +17,7 @@ const {
   } = require('./api')
 const app = express()
 const config = settings.init(app)
-const secret = config.APP.SECRET_TOKEN
+const secret = process.env.SEED
 
 app.use(cors())
 app.use(express.urlencoded({extended: true}));

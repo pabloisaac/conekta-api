@@ -1,13 +1,16 @@
-const port = process.env.PORT || 7777
+const dotenv = require('dotenv')
+
+dotenv.config()
+
+const port = process.env.PORT || 8080
 const host = process.env.HOST || 'localhost'
 const domain = `http://${host}:${port}`
 
 const config = {
   APP: {
-    DB_URL: `mongodb://localhost:27017/${process.env.DB_NAME || 'records-db'}`,
-    DB: process.env.DB_NAME || 'records-db',
-    PORT: process.env.PORT || port,
-    SECRET_TOKEN:'4$4bmQH23+$IFTRMv34R5seffeceE0EmC8YQ4o$'
+    DB_URL: `mongodb://localhost:27017/${process.env.DB_NAME}`,
+    DB: process.env.DB_NAME,
+    PORT: process.env.PORT
   }
 }
 
