@@ -10,7 +10,7 @@ const config = {
   APP: {
     DB_URL: `mongodb://localhost:27017/${process.env.DB_NAME}`,
     DB: process.env.DB_NAME,
-    PORT: process.env.PORT
+    PORT: 443
   }
 }
 
