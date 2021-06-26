@@ -8,12 +8,8 @@ const expressJwt = require('express-jwt')
 const settings = require('./config')
 const auth = require('./auth')
 const fs = require('fs');
-const http = require('http');
-const https = require('https');
 
-const privateKey  = fs.readFileSync('sslcert/key.pem', 'utf8');
-const certificate = fs.readFileSync('sslcert/cert.pem', 'utf8');
-const credentials = {key: privateKey, cert: certificate};
+let server; 
 
 const {
     gLst,
@@ -31,10 +27,45 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json())
 app.use('/api/', expressJwt({ secret: secret, algorithms: ['HS256'] }))
 
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+let port = config.APP.PORT
+let host = process.env.HOST
+let protocol = process.env.PROTOCOL
+let db_url = config.APP.DB_URL
 
-MongoClient.connect(config.APP.DB_URL, { useUnifiedTopology: true },
+// Start a development HTTPS server.
+if (protocol === 'https') {
+    const { execSync } = require('child_process');
+    const execOptions = { encoding: 'utf-8', windowsHide: true };
+    let key = './certs/key.pem';
+    let certificate = './certs/certificate.pem';
+
+    if (!fs.existsSync(key) || !fs.existsSync(certificate)) {
+        try {
+            execSync('openssl version', execOptions);
+            execSync(
+                `openssl req -x509 -newkey rsa:2048 -keyout ./certs/key.tmp.pem -out ${certificate} -days 365 -nodes -subj "/C=US/ST=Foo/L=Bar/O=Baz/CN=localhost"`,
+                execOptions
+            );
+            execSync(`openssl rsa -in ./certs/key.tmp.pem -out ${key}`, execOptions);
+            execSync('rm ./certs/key.tmp.pem', execOptions);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const options = {
+        key: fs.readFileSync(key),
+        cert: fs.readFileSync(certificate),
+        passphrase: 'password'
+    };
+
+    server = require('https').createServer(options, app);
+
+    } else {
+        server = require('http').createServer(app);
+}
+
+MongoClient.connect(db_url, { useUnifiedTopology: true },
     (err, conn) => {
         if (err) return console.log('Unable to connect to mongodb', err)
 
@@ -51,13 +82,12 @@ MongoClient.connect(config.APP.DB_URL, { useUnifiedTopology: true },
         app.put('/api/:entity/put', gPut(db))
         app.post('/api/:entity/post', gPost(db))
         
-        httpServer.listen(8080);
-        httpsServer.listen(8443);
-
-        // app.listen(config.APP.PORT, () => {
-        //     console.log(`[*] Database URL ${config.APP.DB_URL}`)
-        //     console.log(`[*] Server Listening on port ${config.APP.PORT}`)
-        // })
+        server.listen({port, host}, () => {
+            console.log(`[*] Protocol ${protocol}`)
+            console.log(`[*] Host ${host}`)
+            console.log(`[*] Database URL ${db_url}`)
+            console.log(`[*] Server Listening on port ${port}`)
+        })
 
     }
 )
