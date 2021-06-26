@@ -109,7 +109,7 @@ MongoClient.connect(db_url, { useUnifiedTopology: true },
         app.post('/api/:entity/post', gPost(db))
         
         server.listen({port, host}, () => {
-            console.log(`[*] Protocol ${protocol}`)
+            //console.log(`[*] Protocol ${protocol}`)
             console.log(`[*] Host ${host}`)
             console.log(`[*] Database URL ${db_url}`)
             console.log(`[*] Server Listening on port ${port}`)
