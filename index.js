@@ -9,8 +9,8 @@ const settings = require('./config')
 const auth = require('./auth')
 const fs = require('fs');
 var https = require('https');
-var privateKey = fs.readFileSync('./certs/server.key', 'utf8');
-var certificate = fs.readFileSync('./certs/server.cert', 'utf8');
+var privateKey = fs.readFileSync('./certs/server-key.pem', 'utf8');
+var certificate = fs.readFileSync('./certs/server-cert.pem', 'utf8');
 var credentials = { key: privateKey, cert: certificate };
 
 let server;
