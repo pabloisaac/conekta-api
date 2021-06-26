@@ -9,7 +9,7 @@ const settings = require('./config')
 const auth = require('./auth')
 const fs = require('fs');
 
-let server; 
+let server;
 
 const {
     gLst,
@@ -17,79 +17,21 @@ const {
     gPut,
     gDel,
     gPost
-  } = require('./api')
+} = require('./api')
 const app = express()
 const config = settings.init(app)
 const secret = process.env.SEED
 
 app.use(cors())
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use('/api/', expressJwt({ secret: secret, algorithms: ['HS256'] }))
 
 let port = config.APP.PORT
 let host = process.env.HOST
-//let protocol = process.env.PROTOCOL
+let protocol = process.env.PROTOCOL
 let db_url = config.APP.DB_URL
 
-// const { execSync } = require('child_process');
-// const execOptions = { encoding: 'utf-8', windowsHide: true };
-// let key = './certs/key.pem';
-// let certificate = './certs/certificate.pem';
-
-// if (!fs.existsSync(key) || !fs.existsSync(certificate)) {
-//     try {
-//         execSync('openssl version', execOptions);
-//         execSync(
-//             `openssl req -x509 -newkey rsa:2048 -keyout ./certs/key.tmp.pem -out ${certificate} -days 365 -nodes -subj "/C=US/ST=Foo/L=Bar/O=Baz/CN=localhost"`,
-//             execOptions
-//         );
-//         execSync(`openssl rsa -in ./certs/key.tmp.pem -out ${key}`, execOptions);
-//         execSync('rm ./certs/key.tmp.pem', execOptions);
-//     } catch (error) {
-//         console.error(error);
-//     }
-// }
-
-// const options = {
-//     key: fs.readFileSync(key),
-//     cert: fs.readFileSync(certificate),
-//     passphrase: 'password'
-// };
-
-
-// // Start a development HTTPS server.
-// if (protocol === 'https') {
-//     const { execSync } = require('child_process');
-//     const execOptions = { encoding: 'utf-8', windowsHide: true };
-//     let key = './certs/key.pem';
-//     let certificate = './certs/certificate.pem';
-
-//     if (!fs.existsSync(key) || !fs.existsSync(certificate)) {
-//         try {
-//             execSync('openssl version', execOptions);
-//             execSync(
-//                 `openssl req -x509 -newkey rsa:2048 -keyout ./certs/key.tmp.pem -out ${certificate} -days 365 -nodes -subj "/C=US/ST=Foo/L=Bar/O=Baz/CN=localhost"`,
-//                 execOptions
-//             );
-//             execSync(`openssl rsa -in ./certs/key.tmp.pem -out ${key}`, execOptions);
-//             execSync('rm ./certs/key.tmp.pem', execOptions);
-//         } catch (error) {
-//             console.error(error);
-//         }
-//     }
-
-//     const options = {
-//         key: fs.readFileSync(key),
-//         cert: fs.readFileSync(certificate),
-//         passphrase: 'password'
-//     };
-
-//     server = require('https').createServer(options, app);
-
-//     } else {
-//         server = require('http').createServer(app);
-// }
 
 MongoClient.connect(db_url, { useUnifiedTopology: true },
     (err, conn) => {
@@ -107,10 +49,46 @@ MongoClient.connect(db_url, { useUnifiedTopology: true },
         app.delete('/api/:entity/del/:_id', gDel(db))
         app.put('/api/:entity/put', gPut(db))
         app.post('/api/:entity/post', gPost(db))
-        
+
+
+        const { execSync } = require('child_process');
+        const execOptions = { encoding: 'utf-8', windowsHide: true };
+        let key = './certs/key.pem';
+        let certificate = './certs/certificate.pem';
+
+        if (!fs.existsSync(key) || !fs.existsSync(certificate)) {
+            try {
+                execSync('openssl version', execOptions);
+                execSync(
+                    `openssl req -x509 -newkey rsa:2048 -keyout ./certs/key.tmp.pem -out ${certificate} -days 365 -nodes -subj "/C=US/ST=Foo/L=Bar/O=Baz/CN=localhost"`,
+                    execOptions
+                );
+                execSync(`openssl rsa -in ./certs/key.tmp.pem -out ${key}`, execOptions);
+                execSync('rm ./certs/key.tmp.pem', execOptions);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        const options = {
+            key: fs.readFileSync(key),
+            cert: fs.readFileSync(certificate),
+            passphrase: 'password'
+        };
+
+        server = require('https').createServer(options, app);
+
+        // // Start a development HTTPS server.
+        // if (protocol === 'https') {
+
+
+        // } else {
+        //     server = require('http').createServer(app);
+        // }
+
         //server = require('https').createServer(options, app);
-        app.listen(port, () => {
-            //console.log(`[*] Protocol ${protocol}`)
+        server.listen(port, () => {
+            console.log(`[*] Protocol ${protocol}`)
             console.log(`[*] Host ${host}`)
             console.log(`[*] Database URL ${db_url}`)
             console.log(`[*] Server Listening on port ${port}`)
