@@ -4,7 +4,7 @@ dotenv.config()
 
 const port = process.env.PORT || 8080
 const host = process.env.HOST || 'localhost'
-const domain = `http://${host}:${port}`
+const domain = `https://${host}:${port}`
 
 const config = {
   APP: {

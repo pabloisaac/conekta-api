@@ -54,10 +54,10 @@ MongoClient.connect(config.APP.DB_URL, { useUnifiedTopology: true },
         httpServer.listen(8080);
         httpsServer.listen(8443);
 
-        app.listen(config.APP.PORT, () => {
-            console.log(`[*] Database URL ${config.APP.DB_URL}`)
-            console.log(`[*] Server Listening on port ${config.APP.PORT}`)
-        })
+        // app.listen(config.APP.PORT, () => {
+        //     console.log(`[*] Database URL ${config.APP.DB_URL}`)
+        //     console.log(`[*] Server Listening on port ${config.APP.PORT}`)
+        // })
 
     }
 )
