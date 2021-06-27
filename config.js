@@ -2,13 +2,13 @@ const dotenv = require('dotenv')
 
 dotenv.config()
 
-const port = 3443
+const port = w
 const host = process.env.HOST || 'localhost'
 const domain = `https://${host}:${port}`
 
 const config = {
   APP: {
-    DB_URL: `mongodb://localhost:27017/${process.env.DB_NAME}`,
+    DB_URL: "mongodb+srv://jupadevmongo:<password>@cluster0.14oa8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     DB: process.env.DB_NAME,
     PORT: port
   }
