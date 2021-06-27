@@ -2,7 +2,7 @@ const dotenv = require('dotenv')
 
 dotenv.config()
 
-const port = 8080
+const port = process.env.PORT || 3000
 const host = process.env.HOST || 'localhost'
 const domain = `https://${host}:${port}`
 
