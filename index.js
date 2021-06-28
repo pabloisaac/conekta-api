@@ -24,7 +24,7 @@ app.use(express.json())
 app.use('/api/', expressJwt({ secret: secret, algorithms: ['HS256'] }))
 
 let port = config.APP.PORT
-let db_url = config.APP.DB_URL
+let db_url = config.APP.DB_URL || process.env.DB_URL
 
 
 MongoClient.connect(db_url, { useUnifiedTopology: true },
