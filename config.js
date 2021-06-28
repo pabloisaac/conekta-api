@@ -8,7 +8,7 @@ const domain = `https://${host}:${port}`
 
 const config = {
   APP: {
-    DB_URL: `mongodb://localhost:27017/${process.env.DB_NAME}`,
+    DB_URL: process.env.DB_URL || `mongodb://localhost:27017/${process.env.DB_NAME}`,
     DB: process.env.DB_NAME,
     PORT: port
   }
